@@ -1,12 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
-import Divider from '@material-ui/core/Divider';
-import NativeSelect from '@material-ui/core/NativeSelect';
 import withStyles from '@material-ui/core/styles/withStyles';
 import {
   some, find, reduce, map, filter, includes, findIndex,
@@ -22,23 +19,6 @@ const styles = () => ({
     minWidth: 30,
     padding: 0,
     height: 30,
-  },
-  native: {
-    width: 30,
-    height: 30,
-    padding: 8,
-  },
-  nativeRoot: {
-    padding: 0,
-
-    '& + svg': {
-      display: 'none',
-    },
-  },
-  nativeSelect: {
-    padding: 0,
-    lineHeight: 0,
-    height: 11,
   },
   positionStart: {
     position: 'relative',
@@ -582,11 +562,11 @@ class MaterialUiPhoneNumber extends React.Component {
 
   getDropdownProps = () => {
     const {
-      selectedCountry, anchorEl, preferredCountries, onlyCountries,
+      selectedCountry, anchorEl, onlyCountries,
     } = this.state;
 
     const {
-      classes, dropdownClass, localization, disableDropdown, native,
+      classes, dropdownClass, localization, disableDropdown,
     } = this.props;
     const inputFlagClasses = `flag ${selectedCountry.iso2}`;
 
@@ -598,103 +578,47 @@ class MaterialUiPhoneNumber extends React.Component {
           className={classes.positionStart}
           position="start"
         >
-          {native ? (
-            <>
-              <NativeSelect
-                id="country-menu"
-                open={Boolean(anchorEl)}
-                onClose={() => this.setState({ anchorEl: null })}
-                className={classes.native}
-                classes={{
-                  root: clsx(classes.nativeRoot, 'native', inputFlagClasses),
-                  select: classes.nativeSelect,
+          <Button
+            className={classes.flagButton}
+            aria-owns={anchorEl ? 'country-menu' : null}
+            aria-label="Select country"
+            onClick={(e) => this.setState({ anchorEl: e.currentTarget })}
+            aria-haspopup
+          >
+            <div className={inputFlagClasses} />
+          </Button>
+
+          <Menu
+            className={dropdownClass}
+            id="country-menu"
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+            keepMounted
+            onClose={() => this.setState({ anchorEl: null })}
+          >
+            {map(onlyCountries, (country, index) => (
+              <Item
+                key={`preferred_${country.iso2}_${index}`}
+                itemRef={(node) => {
+                  this.flags[`flag_no_${index}`] = node;
                 }}
-                onChange={(e) => this.handleFlagItemClick(e.target.value)}
-                disableUnderline
-              >
-                {!!preferredCountries.length && map(preferredCountries, (country, index) => (
-                  <Item
-                    key={`preferred_${country.iso2}_${index}`}
-                    itemRef={(node) => {
-                      this.flags[`flag_no_${index}`] = node;
-                    }}
-                    name={country.name}
-                    iso2={country.iso2}
-                    dialCode={country.dialCode}
-                    localization={localization && localization[country.name]}
-                    native
-                  />
-                ))}
-
-                {map(onlyCountries, (country, index) => (
-                  <Item
-                    key={`preferred_${country.iso2}_${index}`}
-                    itemRef={(node) => {
-                      this.flags[`flag_no_${index}`] = node;
-                    }}
-                    name={country.name}
-                    iso2={country.iso2}
-                    dialCode={country.dialCode}
-                    localization={localization && localization[country.name]}
-                    native
-                  />
-                ))}
-              </NativeSelect>
-            </>
-          )
-            : (
-              <>
-                <Button
-                  className={classes.flagButton}
-                  aria-owns={anchorEl ? 'country-menu' : null}
-                  aria-label="Select country"
-                  onClick={(e) => this.setState({ anchorEl: e.currentTarget })}
-                  aria-haspopup
-                >
-                  <div className={inputFlagClasses} />
-                </Button>
-
-                <Menu
-                  className={dropdownClass}
-                  id="country-menu"
-                  anchorEl={anchorEl}
-                  open={Boolean(anchorEl)}
-                  onClose={() => this.setState({ anchorEl: null })}
-                >
-                  {!!preferredCountries.length && map(preferredCountries, (country, index) => (
-                    <Item
-                      key={`preferred_${country.iso2}_${index}`}
-                      itemRef={(node) => {
-                        this.flags[`flag_no_${index}`] = node;
-                      }}
-                      selected={isSelected(country)}
-                      onClick={() => this.handleFlagItemClick(country)}
-                      name={country.name}
-                      iso2={country.iso2}
-                      dialCode={country.dialCode}
-                      localization={localization && localization[country.name]}
-                    />
-                  ))}
-
-                  {!!preferredCountries.length && <Divider />}
-
-                  {map(onlyCountries, (country, index) => (
-                    <Item
-                      key={`preferred_${country.iso2}_${index}`}
-                      itemRef={(node) => {
-                        this.flags[`flag_no_${index}`] = node;
-                      }}
-                      selected={isSelected(country)}
-                      onClick={() => this.handleFlagItemClick(country)}
-                      name={country.name}
-                      iso2={country.iso2}
-                      dialCode={country.dialCode}
-                      localization={localization && localization[country.name]}
-                    />
-                  ))}
-                </Menu>
-              </>
-            )}
+                selected={isSelected(country)}
+                onClick={() => this.handleFlagItemClick(country)}
+                name={country.name}
+                iso2={country.iso2}
+                dialCode={country.dialCode}
+                localization={localization && localization[country.name]}
+              />
+            ))}
+          </Menu>
         </InputAdornment>
       ),
     };

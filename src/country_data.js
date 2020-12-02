@@ -1,21 +1,3 @@
-// Country model:
-// [
-//    Country name,
-//    Regions,
-//    iso2 code,
-//    International dial code,
-//    Format (if available),
-//    Order (if >1 country with same dial code),
-//    Area codes (if >1 country with same dial code)
-// ]
-//
-// Regions:
-// ['america', 'europe', 'asia', 'oceania', 'africa']
-//
-// Sub-regions:
-// ['north-america', 'south-america', 'central-america', 'carribean',
-//  'european-union', 'ex-ussr', 'middle-east', 'north-africa']
-
 const rawAllCountries = [
   [
     'Afghanistan',
