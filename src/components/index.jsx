@@ -1,9 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import clsx from 'clsx';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import withStyles from '@material-ui/core/styles/withStyles';
 import {
   some, find, reduce, map, filter, includes, findIndex,
@@ -22,6 +24,12 @@ const styles = () => ({
   },
   positionStart: {
     position: 'relative',
+  },
+  popoverPaper: {
+    width: '48%',
+  },
+  mobilePopover: {
+    width: '100%',
   },
 });
 
@@ -566,11 +574,9 @@ class MaterialUiPhoneNumber extends React.Component {
     } = this.state;
 
     const {
-      classes, dropdownClass, localization, disableDropdown,
+      classes, dropdownClass, localization, disableDropdown, isMobile
     } = this.props;
     const inputFlagClasses = `flag ${selectedCountry.iso2}`;
-
-    const isSelected = (country) => Boolean(selectedCountry && selectedCountry.dialCode === country.dialCode);
 
     const dropdownProps = disableDropdown ? {} : {
       startAdornment: (
@@ -586,6 +592,7 @@ class MaterialUiPhoneNumber extends React.Component {
             aria-haspopup
           >
             <div className={inputFlagClasses} />
+            <ArrowDropDownIcon fontSize="small" />
           </Button>
 
           <Menu
@@ -601,6 +608,7 @@ class MaterialUiPhoneNumber extends React.Component {
               vertical: 'top',
               horizontal: 'left',
             }}
+            PopoverClasses={{ paper: isMobile ? classes.mobilePopover : classes.popoverPaper }}
             keepMounted
             onClose={() => this.setState({ anchorEl: null })}
           >
@@ -610,7 +618,6 @@ class MaterialUiPhoneNumber extends React.Component {
                 itemRef={(node) => {
                   this.flags[`flag_no_${index}`] = node;
                 }}
-                selected={isSelected(country)}
                 onClick={() => this.handleFlagItemClick(country)}
                 name={country.name}
                 iso2={country.iso2}

@@ -2,28 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import MenuItem from '@material-ui/core/MenuItem';
 import RootRef from '@material-ui/core/RootRef';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 
 class Item extends React.PureComponent {
   render() {
     const {
-      name, iso2, dialCode, localization, itemRef, native, ...restProps
+      name, iso2, dialCode, localization, itemRef, ...restProps
     } = this.props;
-
-    if (native) {
-      return (
-        <option
-          className="country"
-          data-dial-code="1"
-          data-country-code={iso2}
-          value={iso2}
-          {...restProps}
-        >
-          {localization || name}
-          {' '}
-          {`+${dialCode}`}
-        </option>
-      );
-    }
 
     return (
       <RootRef rootRef={(node) => itemRef(node)}>
@@ -33,13 +19,10 @@ class Item extends React.PureComponent {
           data-country-code={iso2}
           {...restProps}
         >
-          <div className={`flag ${iso2} margin`} />
-
-          <span className="country-name">
-            {localization || name}
-          </span>
-
-          <span className="dial-code">{`+${dialCode}`}</span>
+          <ListItemIcon>
+            <div className={`flag ${iso2} margin`} />
+          </ListItemIcon>
+          <ListItemText primary={`${localization || name} +${dialCode}`} />
         </MenuItem>
       </RootRef>
     );
@@ -52,12 +35,10 @@ Item.propTypes = {
   dialCode: PropTypes.string.isRequired,
   itemRef: PropTypes.func.isRequired,
   localization: PropTypes.string,
-  native: PropTypes.bool,
 };
 
 Item.defaultProps = {
   localization: null,
-  native: false,
 };
 
 export default Item;
